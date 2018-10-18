@@ -1,0 +1,5 @@
+mean:
+tensor([0.1149, 0.0922, 0.0553], dtype=torch.float64)
+
+std:
+tensor([0.1694, 0.1381, 0.1551], dtype=torch.float64)
