@@ -7,6 +7,9 @@ Human Protein Atlas Kaggle challenge
 pip install -e .
 ```
 
+F1 score in keras: https://medium.com/@thongonary/how-to-compute-f1-score-for-each-epoch-in-keras-a1acd17715a2
+Loss function: https://www.kaggle.com/rejpalcz/best-loss-function-for-f1-score-metric/notebook
+Model baseline: https://www.kaggle.com/byrachonok/pretrained-inceptionresnetv2-base-classifier
 
 Project Organization
 ------------
