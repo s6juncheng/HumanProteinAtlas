@@ -1,6 +1,7 @@
 import time
 import copy
 from sklearn.metrics import f1_score
+from hpa_src.data.functional import preds2label
 
 def train_model(model, criterion, optimizer, scheduler, num_epochs=3):
     since = time.time()

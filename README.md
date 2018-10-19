@@ -3,6 +3,11 @@ HumanProteinAtlas
 
 Human Protein Atlas Kaggle challenge
 
+```bash
+pip install -e .
+```
+
+
 Project Organization
 ------------
 
@@ -32,7 +37,7 @@ Project Organization
     │                         generated with `pip freeze > requirements.txt`
     │
     ├── setup.py           <- makes project pip installable (pip install -e .) so src can be imported
-    ├── src                <- Source code for use in this project.
+    ├── hpa_src                <- Source code for use in this project.
     │   ├── __init__.py    <- Makes src a Python module
     │   │
     │   ├── data           <- Scripts to download or generate data

@@ -2,11 +2,15 @@ import pandas as pd
 import numpy as np
 from skimage import io
 from torch.utils.data import Dataset
+from hpa_src.config import get_data_dir
 
+__all__ = ['readimg', 'HpaDataset', 'TestDataset']
+
+DATADIR = get_data_dir()
 
 CHANELS = ['_yellow', '_red', '_green', '_blue']
 def readimg(imgid, 
-            datadir=DATADIR + 'png/train/', 
+            datadir=DATADIR+'raw/png/train/', 
             suffix='.png', 
             rgb=True, 
             stack=True):
@@ -36,6 +40,8 @@ class HpaDataset(Dataset):
         self.targets = imgs.target_list
         self.transform = transform
         self.length = imgs.shape[0]
+        self.num_inputs = self.length
+        self.num_targets = self.length
 
     def __len__(self):
         return self.length
@@ -57,12 +63,32 @@ class TestDataset(Dataset):
         self.ids = imgs.Id
         self.transform = transform
         self.length = imgs.shape[0]
+        self.num_inputs = self.length
+        self.num_targets = self.length
 
     def __len__(self):
         return self.length
         
     def __getitem__(self, idx):
-        img = readimg(self.ids[idx], datadir=DATADIR+'png/test/')
+        img = readimg(self.ids[idx], datadir=DATADIR+'raw/png/test/')
         if self.transform:
             img = self.transform(img)
         return img
+ 
+
+# Train, Validation split
+from torch.utils.data.sampler import SubsetRandomSampler
+#INDICES = list(range(pd.read_csv(DATADIR + "raw/png/train.csv").shape[0]))
+
+def train_val_split(datasize, validation_split=0.2):
+    """ Split a data of size `datasize`, return sampler object
+    Args:
+        datasize: int, number of data points
+    """
+    indices = list(range(datasize))
+    np.random.shuffle(indices)
+    num_val = int(validation_split * len(indices))
+    train_idx, valid_idx = indices[num_val:], indices[:num_val]
+    train_sampler = SubsetRandomSampler(train_idx)
+    val_sampler = SubsetRandomSampler(valid_idx)
+    return train_sampler, val_sampler

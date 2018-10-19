@@ -1,5 +1,6 @@
 from skimage import io, transform
 import torch
+from PIL import Image
 
 class Rescale(object):
     """Rescale the image in a sample to a given size.
@@ -40,3 +41,10 @@ class ToTensor(object):
         # torch image: C X H X W
         image = image.transpose((2, 0, 1))
         return torch.from_numpy(image).float()
+    
+class ToPIL(object):
+    """ Convert to PIL Image
+    """
+    def __call__(self, image):
+        image = Image.fromarray(image)
+        return image

@@ -1,6 +1,6 @@
 import numpy as np
 
-def preds2label(preds, threshold=0, onehot=True):
+def preds2onehot(preds, threshold=0):
     ''' Convert prediction to multilabel
     Args:
         preds: prediction, default logits
@@ -10,12 +10,20 @@ def preds2label(preds, threshold=0, onehot=True):
 
     for i in range(preds.shape[0]):
         lb = np.argwhere(preds[i,:] > threshold)
-        if onehot:
-            label[i,lb] = 1
-            return label
-        else:
-            yield np.array(lb).flatten()
+        label[i,lb] = 1
+    return label
             
+def preds2label(preds, threshold=0):
+    ''' Convert prediction to multilabel
+    Args:
+        preds: prediction, default logits
+        threshod: 0 for logits, 0.5 for probs
+    '''
+    label = np.zeros(preds.shape)
+
+    for i in range(preds.shape[0]):
+        lb = np.argwhere(preds[i,:] > threshold)
+        yield np.array(lb).flatten()
             
 def array2str(arr):
     for i in arr:
