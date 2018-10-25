@@ -41,6 +41,16 @@ class ToTensor(object):
         # torch image: C X H X W
         image = image.transpose((2, 0, 1))
         return torch.from_numpy(image).float()
+
+class ToNumpy(object):
+    """ Convert torch tensor to numpy
+    """
+    def __call__(self, image):
+        # swap color axis because
+        # torch image: C X H X W  
+        # numpy image: H x W x C
+        image = image.permute(1,2,0)
+        return image.numpy()
     
 class ToPIL(object):
     """ Convert to PIL Image

@@ -9,7 +9,8 @@ with open('README.md') as readme_file:
 requirements = [
     "scikit-image",
     "sklearn",
-    "Pillow"
+    "Pillow",
+    "pytorch-ignite"
 ]
 
 test_requirements = [

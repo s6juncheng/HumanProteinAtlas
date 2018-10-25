@@ -28,3 +28,18 @@ def preds2label(preds, threshold=0):
 def array2str(arr):
     for i in arr:
         yield ' '.join([str(l) for l in i])
+
+
+def iterable_cycle(iterable, input_torch=True):
+    """
+    Args:
+      iterable: object with an __iter__ method that can be called multiple times
+      input_torch: input torch tensor
+    """
+    while True:
+        for item in iterable:
+            if input_torch:
+                x, y = item
+                yield x.numpy(), y.numpy()
+            else:
+                yield x

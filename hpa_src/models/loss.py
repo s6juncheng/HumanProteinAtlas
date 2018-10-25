@@ -13,4 +13,7 @@ class CrossEntropyLossOneHot(_WeightedLoss):
     
     def forward(self, input, target):
         logsoftmax = nn.LogSoftmax(1)
-        return torch.mean(torch.sum(-target * logsoftmax(input), dim=1))
+        if self.weigth is None:
+            return torch.mean(torch.sum(-target * logsoftmax(input), dim=1))
+        else:
+            return torch.mean(torch.sum(-target * logsoftmax(input), dim=1))
