@@ -1,4 +1,5 @@
 from keras.callbacks import History, Callback, ModelCheckpoint
+import torch
 
 class TorchModelCheckpoint(ModelCheckpoint):
     def on_epoch_end(self, epoch, logs=None):
@@ -21,9 +22,9 @@ class TorchModelCheckpoint(ModelCheckpoint):
                                      current, filepath))
                         self.best = current
                         if self.save_weights_only:
-                            self.model.state_dict(filepath)
+                            torch.save(self.model.state_dict(), filepath)
                         else:
-                            self.model.save(filepath)
+                            torch.save(self.model, filepath)
                     else:
                         if self.verbose > 0:
                             print('\nEpoch %05d: %s did not improve from %0.5f' %
@@ -32,6 +33,6 @@ class TorchModelCheckpoint(ModelCheckpoint):
                 if self.verbose > 0:
                     print('\nEpoch %05d: saving model to %s' % (epoch + 1, filepath))
                 if self.save_weights_only:
-                    self.model.state_dict(filepath)
+                    torch.save(self.model.state_dict(), filepath)
                 else:
-                    self.model.save(filepath)
+                    torch.save(self.model, filepath)

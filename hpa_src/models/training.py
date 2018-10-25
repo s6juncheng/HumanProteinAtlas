@@ -3,11 +3,14 @@ from sklearn.metrics import f1_score
 from hpa_src.data.functional import preds2label, preds2onehot, array2str
 from hpa_src.models.utils import AverageMeter
 from keras.callbacks import History
+import torch
+import numpy as np
 
 def train(model, 
           train_loader, 
           criterion, 
-          optimizer):
+          optimizer,
+          device='cpu'):
     ''' Train model for one epoch
     '''
     batch_time = AverageMeter()
@@ -15,6 +18,7 @@ def train(model,
     losses = AverageMeter()
     f1 = AverageMeter()
 
+    model.to(device)
     model.train()
 
     end = time.time()
@@ -53,7 +57,7 @@ def train(model,
         'train_f1': f1.avg
     }
 
-def evaluate(model, val_loader, criterion):
+def evaluate(model, val_loader, criterion, device='cpu'):
     losses = AverageMeter()
     # switch to evaluate mode
     model.eval()
@@ -83,15 +87,16 @@ def evaluate(model, val_loader, criterion):
 
 class ModelTrainer(object):
     def __init__(self,
-                model,
-                ):
+                model=None):
         self.model = model
     
     def compile(self,
                optimizer,
-               loss):
+               loss,
+              device='cpu'):
         self.optimizer = optimizer
         self.criterion = loss
+        self.device = device
     
     def fit(self, 
             train_loader, 
@@ -99,7 +104,6 @@ class ModelTrainer(object):
            model_checker=None,
            epochs=100):
         self.history = History()
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         
         self.history.on_train_begin()
         
@@ -107,11 +111,15 @@ class ModelTrainer(object):
             train_logs = train(self.model,
                                train_loader,
                                self.criterion, 
-                               self.optimizer)
+                               self.optimizer,
+                               self.device)
             # evaluate
             val_logs = evaluate(self.model,
-                                 val_loader,
-                                 self.criterion)
+                                val_loader,
+                                self.criterion,
+                                self.device)
             self.history.on_epoch_end(epoch, {**train_logs, **val_logs})
             if model_checker is not None:
+                model_checker.set_model(self.model)
                 model_checker.on_epoch_end(epoch, {**train_logs, **val_logs})
+                
