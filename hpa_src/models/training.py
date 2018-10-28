@@ -3,6 +3,7 @@ from sklearn.metrics import f1_score
 from hpa_src.data.functional import preds2label, preds2onehot, array2str
 from hpa_src.models.utils import AverageMeter
 from keras.callbacks import History
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 import torch
 import numpy as np
 
@@ -102,10 +103,12 @@ class ModelTrainer(object):
             train_loader, 
            val_loader,
            model_checker=None,
+           reduceLROnPlateau=True,
            epochs=100):
         self.history = History()
-        
         self.history.on_train_begin()
+        
+        scheduler = ReduceLROnPlateau(self.optimizer, 'min')
         
         for epoch in range(epochs):
             train_logs = train(self.model,
@@ -122,4 +125,5 @@ class ModelTrainer(object):
             if model_checker is not None:
                 model_checker.set_model(self.model)
                 model_checker.on_epoch_end(epoch, {**train_logs, **val_logs})
-                
+            if reduceLROnPlateau:
+                scheduler.step(val_logs['val_loss'])
