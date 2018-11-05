@@ -28,12 +28,14 @@ def array2str(arr):
     for i in arr:
         yield ' '.join([str(l) for l in i])
 
-        
-def optim_threshold(y_true, y_pred):
+from sklearn.metrics import f1_score        
+def optim_threshold(y_true, y_pred, logits=False):
     ''' Optimize threshold for a single class
     '''
     scores = []
     thrs = np.arange(0.01,0.9,0.01)
+    if logits:
+        thrs = np.log(thrs/(1-thrs))
     for p in thrs:
         scores.append(f1_score(y_true, y_pred>p))
     return thrs[np.array(scores).argmax()]

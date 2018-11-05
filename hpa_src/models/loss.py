@@ -2,6 +2,7 @@ from torch.nn.modules.loss import _WeightedLoss
 import torch.nn as nn
 import torch
 import torch.nn.functional as F
+import numpy as np
 
 class CrossEntropyLossOneHot(_WeightedLoss):
     '''
@@ -24,29 +25,32 @@ class CrossEntropyLossOneHot(_WeightedLoss):
         
 class FocalLoss(nn.Module):
     def __init__(self, 
-                 alpha=1, 
-                 gamma=2, 
+                 alpha=None,
+                 gamma=2,
                  logits=False, 
                  reduction='elementwise_mean'):
         
         super(FocalLoss, self).__init__()
-        self.alpha = torch.from_numpy(alpha).float()
+        self.alpha = alpha
+        if self.alpha is not None:
+            self.alpha = torch.from_numpy(alpha).float()
         self.gamma = gamma
         self.logits = logits
         self.reduction = reduction
 
     def forward(self, inputs, targets):
-        
-        if inputs.is_cuda and not self.alpha.is_cuda:
-            device = inputs.device
-            self.alpha = self.alpha.cuda(device)
             
         if self.logits:
             BCE_loss = F.binary_cross_entropy_with_logits(inputs, targets, reduction='none') # -log(p_t), p_t: predicted target prob
         else:
             BCE_loss = F.binary_cross_entropy(inputs, targets, reduction='none')
         pt = torch.exp(-BCE_loss)
-        F_loss = self.alpha * torch.pow((1-pt), self.gamma) * BCE_loss
+        F_loss = torch.pow((1-pt), self.gamma) * BCE_loss
+        if self.alpha is not None:
+            if inputs.is_cuda and not self.alpha.is_cuda:
+                device = inputs.device
+                self.alpha = self.alpha.cuda(device)
+            F_loss = self.alpha * F_loss
 
         if self.reduction == 'none':
             return F_loss

@@ -6,6 +6,7 @@ from keras.callbacks import History
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 import torch
 import numpy as np
+import matplotlib.pyplot as plt
 
 def train(model, 
           train_loader, 
@@ -108,7 +109,7 @@ class ModelTrainer(object):
         self.history = History()
         self.history.on_train_begin()
         
-        scheduler = ReduceLROnPlateau(self.optimizer, 'min')
+        scheduler = ReduceLROnPlateau(self.optimizer, 'min', patience=3)
         
         for epoch in range(epochs):
             train_logs = train(self.model,
@@ -122,8 +123,19 @@ class ModelTrainer(object):
                                 self.criterion,
                                 self.device)
             self.history.on_epoch_end(epoch, {**train_logs, **val_logs})
+            plot_history(self.history, metrics=['loss', 'f1'])
             if model_checker is not None:
                 model_checker.set_model(self.model)
                 model_checker.on_epoch_end(epoch, {**train_logs, **val_logs})
             if reduceLROnPlateau:
                 scheduler.step(val_logs['val_loss'])
+
+                
+def plot_history(history, metrics=['loss'], save_path='.'):
+    for metric in metrics:
+        plt.figure(figsize=(7,5))
+        plt.plot(history.epoch, history.history['train_'+metric], label='train_'+metric)
+        plt.plot(history.epoch, history.history['val_'+metric], label='val_'+metric)
+        plt.legend()
+        plt.savefig(metric+'.png')
+        plt.close('all')
