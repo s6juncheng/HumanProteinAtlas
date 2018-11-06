@@ -58,3 +58,16 @@ class FocalLoss(nn.Module):
             return torch.mean(F_loss)
         else:
             return F_loss.sum()
+        
+        
+
+def dice_loss(input, target):
+    input = torch.sigmoid(input)
+    smooth = 1.
+
+    iflat = input.view(-1)
+    tflat = target.view(-1)
+    intersection = (iflat * tflat).sum()
+    
+    return 1 - ((2. * intersection + smooth) /
+              (iflat.sum() + tflat.sum() + smooth))
