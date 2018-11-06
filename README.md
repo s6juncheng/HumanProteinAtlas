@@ -15,6 +15,8 @@ Model baseline: https://www.kaggle.com/byrachonok/pretrained-inceptionresnetv2-b
 
 https://arxiv.org/pdf/1709.01421.pdf
 
+https://arxiv.org/pdf/1707.03237.pdf
+
 Project Organization
 ------------
 
