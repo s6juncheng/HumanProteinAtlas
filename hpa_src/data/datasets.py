@@ -16,8 +16,8 @@ def readimg(imgid,
             stack=True):
     imgs = [io.imread(datadir + imgid + cl + suffix) for cl in CHANELS]
     if rgb:
-        imgs[1] += (imgs[0]/2).astype(np.uint8)
-        imgs[2] += (imgs[0]/2).astype(np.uint8)
+        #imgs[1] += (imgs[0]/2).astype(np.uint8)
+        #imgs[2] += (imgs[0]/2).astype(np.uint8)
         img = np.stack(imgs[1:], -1)
         return img
     else:
